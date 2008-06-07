@@ -1,7 +1,7 @@
 /*
- * Simulated browser environment for Rhino
+ * Pure JavaScript Browser Environment
  *   By John Resig <http://ejohn.org/>
- * Copyright 2007 John Resig, under the MIT License
+ * Copyright 2008 John Resig, under the MIT License
  */
 
 // The window Object
