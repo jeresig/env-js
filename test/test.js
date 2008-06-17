@@ -1,5 +1,5 @@
 // Init
-load("env.js");
+load("src/env.js");
 
 window.location = "test/index.html";
 
