@@ -1,5 +1,6 @@
 // Init
 load("src/env.js");
+load("src/htmlparser.js");
 
 window.location = "test/index.html";
 
