@@ -143,6 +143,9 @@ var window = this;
 	};
 	
 	DOMDocument.prototype = {
+		get nodeType(){
+			return 9;
+		},
 		createTextNode: function(text){
 			return makeNode( this._dom.createTextNode(
 				text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")) );
@@ -153,6 +156,19 @@ var window = this;
 		getElementsByTagName: function(name){
 			return new DOMNodeList( this._dom.getElementsByTagName(
 				name.toLowerCase()) );
+		},
+		getElementsByName: function(name){
+			var elems = this._dom.getElementsByTagName("*"), ret = [];
+			ret.item = function(i){ return this[i]; };
+			ret.getLength = function(){ return this.length; };
+			
+			for ( var i = 0; i < elems.length; i++ ) {
+				var elem = elems.item(i);
+				if ( elem.getAttribute("name") == name )
+					ret.push( elem );
+			}
+			
+			return new DOMNodeList( ret );
 		},
 		getElementById: function(id){
 			var elems = this._dom.getElementsByTagName("*");
@@ -264,6 +280,9 @@ var window = this;
 		get nodeName() {
 			return this._dom.getNodeName();
 		},
+		get childNodes(){
+			return new DOMNodeList( this._dom.getChildNodes() );
+		},
 		cloneNode: function(deep){
 			return makeNode( this._dom.cloneNode(deep) );
 		},
@@ -289,6 +308,19 @@ var window = this;
 			return this.nodeValue;
 		}
 	};
+
+	window.DOMComment = function(node){
+		this._dom = node;
+	};
+
+	DOMComment.prototype = extend(new DOMNode(), {
+		get nodeType(){
+			return 8;
+		},
+		get outerHTML(){
+			return "<!--" + this.nodeValue + "-->";
+		}
+	});
 
 	// DOM Element
 
@@ -349,7 +381,7 @@ var window = this;
 		set innerHTML(html){
 			html = html.replace(/<\/?([A-Z]+)/g, function(m){
 				return m.toLowerCase();
-			});
+			}).replace(/&nbsp;/g, " ");
 			
 			var nodes = this.ownerDocument.importNode(
 				new DOMDocument( new java.io.ByteArrayInputStream(
@@ -505,6 +537,9 @@ var window = this;
 		get elements(){
 			return this.getElementsByTagName("*");
 		},
+		get options(){
+			return this.getElementsByTagName("option");
+		},
 		get contentWindow(){
 			return this.nodeName == "IFRAME" ? {
 				document: this.contentDocument
@@ -548,9 +583,11 @@ var window = this;
 	function makeNode(node){
 		if ( node ) {
 			if ( !obj_nodes.containsKey( node ) )
-				obj_nodes.put( node, node.getNodeType() == 
-					Packages.org.w3c.dom.Node.ELEMENT_NODE ?
-						new DOMElement( node ) : new DOMNode( node ) );
+				obj_nodes.put( node, node.getNodeType() == 1?
+					new DOMElement( node ) :
+					node.getNodeType() == 8 ?
+					new DOMComment( node ) :
+					new DOMNode( node ) );
 			
 			return obj_nodes.get(node);
 		} else

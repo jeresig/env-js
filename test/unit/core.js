@@ -1388,6 +1388,8 @@ test("text(String)", function() {
 	expect(4);
 	equals( jQuery("#foo").text("<div><b>Hello</b> cruel world!</div>")[0].innerHTML, "&lt;div&gt;&lt;b&gt;Hello&lt;/b&gt; cruel world!&lt;/div&gt;", "Check escaped text" );
 
+print(jQuery("#nonnodes")[0].innerHTML);
+
 	// using contents will get comments regular, text, and comment nodes
 	var j = jQuery("#nonnodes").contents();
 	j.text("hi!");

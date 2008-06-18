@@ -1,3 +1,10 @@
+var jQuery = this.jQuery || "jQuery", // For testing .noConflict()
+	$ = this.$ || "$",
+	originaljQuery = jQuery,
+	original$ = $;
+
+var isLocal = true;
+
 function test(name, fn){
 	expected = -1;
 	numTests = 0;
@@ -138,7 +145,7 @@ function t(a,b,c) {
 function equals(expected, actual, message) {
 	var result = expected == actual;
 	message = message || (result ? "okay" : "failed");
-	log( result, result ? message + ": " + expected : message + " expected: " + expected + " actual: " + actual );
+	log( result, result ? message + ": " + expected : message + " actual: " + expected + " expected: " + actual );
 }
 
 var numTests = 0, total = 0, pass = 0, fail = 0;
