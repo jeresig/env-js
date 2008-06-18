@@ -339,14 +339,35 @@ var window = this;
 			if ( style.length == 2 )
 				this.style[ style[0] ] = style[1];
 		}
+		
+		if ( this.nodeName == "FORM" ) {
+			this.__defineGetter__("elements", function(){
+				return this.getElementsByTagName("*");
+			});
+			
+			this.__defineGetter__("length", function(){
+				var elems = this.elements;
+				for ( var i = 0; i < elems.length; i++ ) {
+					this[i] = elems[i];
+				}
+				
+				return elems.length;
+			});
+		}
+		
+		if ( this.nodeName == "SELECT" ) {
+			this.__defineGetter__("options", function(){
+				return this.getElementsByTagName("option");
+			});
+		}
 	};
 	
 	DOMElement.prototype = extend( new DOMNode(), {
 		get nodeName(){
-			return this.tagName.toUpperCase();
+			return this.tagName;
 		},
 		get tagName(){
-			return this._dom.getTagName();
+			return this._dom.getTagName().toUpperCase();
 		},
 		toString: function(){
 			return "<" + this.tagName + (this.id ? "#" + this.id : "" ) + ">";
@@ -503,6 +524,23 @@ var window = this;
 		},
 		insertBefore: function(node,before){
 			this._dom.insertBefore( node._dom, before ? before._dom : before );
+			
+			execScripts( node );
+			
+			function execScripts( node ) {
+				if ( node.nodeName == "SCRIPT" ) {
+					if ( !node.getAttribute("src") ) {
+						// We can't eval in a global context, in Rhino, so we
+						// have to use a dirty hack.
+						eval( node.textContent.replace(/\bvar /g, "") );
+					}
+				} else {
+					var scripts = node.getElementsByTagName("script");
+					for ( var i = 0; i < scripts.length; i++ ) {
+						execScripts( node );
+					}
+				}
+			}
 		},
 		removeChild: function(node){
 			this._dom.removeChild( node._dom );
@@ -533,12 +571,6 @@ var window = this;
 			var event = document.createEvent();
 			event.initEvent("blur");
 			this.dispatchEvent(event);
-		},
-		get elements(){
-			return this.getElementsByTagName("*");
-		},
-		get options(){
-			return this.getElementsByTagName("option");
 		},
 		get contentWindow(){
 			return this.nodeName == "IFRAME" ? {
