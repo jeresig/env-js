@@ -354,12 +354,14 @@ var window = this;
 				return elems.length;
 			});
 		}
-		
+
 		if ( this.nodeName == "SELECT" ) {
 			this.__defineGetter__("options", function(){
 				return this.getElementsByTagName("option");
 			});
 		}
+
+		this.defaultValue = this.value;
 	};
 	
 	DOMElement.prototype = extend( new DOMNode(), {
@@ -488,7 +490,10 @@ var window = this;
 		
 		get type() { return this.getAttribute("type") || ""; },
 		set type(val) { return this.setAttribute("type",val); },
-		
+
+		get defaultValue() { return this.getAttribute("defaultValue") || ""; },
+		set defaultValue(val) { return this.setAttribute("defaultValue",val); },
+
 		get value() { return this.getAttribute("value") || ""; },
 		set value(val) { return this.setAttribute("value",val); },
 		
