@@ -530,9 +530,7 @@ var window = this;
 			function execScripts( node ) {
 				if ( node.nodeName == "SCRIPT" ) {
 					if ( !node.getAttribute("src") ) {
-						// We can't eval in a global context, in Rhino, so we
-						// have to use a dirty hack.
-						eval( node.textContent.replace(/\bvar /g, "") );
+						eval.call( window, node.textContent );
 					}
 				} else {
 					var scripts = node.getElementsByTagName("script");
