@@ -701,19 +701,21 @@ var window = this;
 					self.status = parseInt(connection.responseCode) || undefined;
 					self.statusText = connection.responseMessage || "";
 
-					var is = (contentEncoding.equalsIgnoreCase("gzip") || contentEncoding.equalsIgnoreCase("decompress") )?
-       						new java.util.zip.GZIPInputStream(connection.getInputStream()) :
-       						connection.getInputStream(),
-					baos = new java.io.ByteArrayOutputStream(),
-       					buffer = java.lang.reflect.Array.newInstance(java.lang.Byte.TYPE, 1024),
-					length, responseXML = null;
+					var contentEncoding = connection.getContentEncoding() || "utf-8",
+						strem = (contentEncoding.equalsIgnoreCase("gzip") || contentEncoding.equalsIgnoreCase("decompress") )?
+       							new java.util.zip.GZIPInputStream(connection.getInputStream()) :
+       							connection.getInputStream(),
+						baos = new java.io.ByteArrayOutputStream(),
+       						buffer = java.lang.reflect.Array.newInstance(java.lang.Byte.TYPE, 1024),
+						length,
+						responseXML = null;
 
-					while ((length = is.read(buffer)) != -1) {
+					while ((length = stream.read(buffer)) != -1) {
 						baos.write(buffer, 0, length);
 					}
 
 					baos.close();
-					is.close();
+					stream.close();
 
 					self.responseText = java.nio.charset.Charset.forName(contentEncoding)
 						.decode(java.nio.ByteBuffer.wrap(baos.toByteArray())).toString();
