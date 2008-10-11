@@ -700,15 +700,24 @@ var window = this;
 					self.readyState = 4;
 					self.status = parseInt(connection.responseCode) || undefined;
 					self.statusText = connection.responseMessage || "";
-					
-					var stream = new java.io.InputStreamReader(connection.getInputStream()),
-						buffer = new java.io.BufferedReader(stream), line;
-					
-					while ((line = buffer.readLine()) != null)
-						self.responseText += line;
 
-					var responseXML = null;
+					var is = (contentEncoding.equalsIgnoreCase("gzip") || contentEncoding.equalsIgnoreCase("decompress") )?
+       						new java.util.zip.GZIPInputStream(connection.getInputStream()) :
+       						connection.getInputStream(),
+					baos = new java.io.ByteArrayOutputStream(),
+       					buffer = java.lang.reflect.Array.newInstance(java.lang.Byte.TYPE, 1024),
+					length, responseXML = null;
 
+					while ((length = is.read(buffer)) != -1) {
+						baos.write(buffer, 0, length);
+					}
+
+					baos.close();
+					is.close();
+
+					self.responseText = java.nio.charset.Charset.forName(contentEncoding)
+						.decode(java.nio.ByteBuffer.wrap(baos.toByteArray())).toString();
+					
 					self.__defineGetter__("responseXML", function(){
 						return responseXML;
 					});
