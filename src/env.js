@@ -737,7 +737,7 @@ var window = this;
 			else {
 				var returnedHeaders = [];
 				for (var rHeader in this.responseHeaders) {
-					if (rHeader.match(new Regexp(header, "i")))
+					if (rHeader.match(new RegExp(header, "i")))
 						returnedHeaders.push(this.responseHeaders[rHeader]);
 				}
 			
