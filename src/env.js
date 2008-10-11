@@ -706,12 +706,16 @@ var window = this;
 					
 					while ((line = buffer.readLine()) != null)
 						self.responseText += line;
-						
-					self.responseXML = null;
+
+					var responseXML = null;
+
+					self.__defineGetter__("responseXML", function(){
+						return responseXML;
+					});
 					
 					if ( self.responseText.match(/^\s*</) ) {
 						try {
-							self.responseXML = new DOMDocument(
+							responseXML = new DOMDocument(
 								new java.io.ByteArrayInputStream(
 									(new java.lang.String(
 										self.responseText)).getBytes("UTF8")));
