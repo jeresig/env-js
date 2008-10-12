@@ -702,7 +702,7 @@ var window = this;
 					self.statusText = connection.responseMessage || "";
 
 					var contentEncoding = connection.getContentEncoding() || "utf-8",
-						strem = (contentEncoding.equalsIgnoreCase("gzip") || contentEncoding.equalsIgnoreCase("decompress") )?
+						stream = (contentEncoding.equalsIgnoreCase("gzip") || contentEncoding.equalsIgnoreCase("decompress") )?
        							new java.util.zip.GZIPInputStream(connection.getInputStream()) :
        							connection.getInputStream(),
 						baos = new java.io.ByteArrayOutputStream(),
